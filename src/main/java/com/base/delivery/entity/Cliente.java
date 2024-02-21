@@ -21,7 +21,7 @@ public class Cliente {
     @Column(name = "nome", nullable = false)
     private String nome;
 
-    @Column(name = "numero_telefone")
+    @Column(name = "numero_telefone", unique = true)
     @Pattern(regexp = "\\(\\d{2}\\) \\d{4}-\\d{4}")
     private String numeroTelefone;
 

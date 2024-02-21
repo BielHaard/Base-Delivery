@@ -3,6 +3,7 @@ package com.base.delivery.service;
 import com.base.delivery.entity.Cliente;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ClienteService {
 
@@ -12,7 +13,7 @@ public interface ClienteService {
 
     Cliente adicionarCliente(Cliente cliente);
 
-    Cliente atualizarCliente(String id, Cliente cliente);
+    Cliente atualizarCliente(Long id, Cliente cliente);
 
     void deletarCliente(Long id);
 
