@@ -1,5 +1,5 @@
-# baseAPI
-<h2>This is a base application introducing a JWT auth on login e signup, have a documentantion Endpoints on a Swagger.</h2>
+# Base-Delivery-API
+<h2>This is a base application introducing a JWT auth with login e signup, to magnament a delivery simple control.</h2>
 
 ## 🚀 Start
 
@@ -11,7 +11,7 @@ how many thing's what do you need for run this application?
 
 ```
 Java 17
-Springboot 3.X
+Springboot 2.7.X
 Postgresql
 
 ```
@@ -25,9 +25,15 @@ how?
 ```
 application.properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/nome_do_banco
-spring.datasource.username=seu_usuario
-spring.datasource.password=sua_senha
+spring.datasource.username=your_user
+spring.datasource.password=your_password
 spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.mvc.pathmatch.matching-strategy=ant-path-matcher
+
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=none
+token.signing.key=your_secret_key
 ```
 
 ## 🛠️ Make by
@@ -37,7 +43,7 @@ spring.datasource.driver-class-name=org.postgresql.Driver
 * [Maven](https://maven.apache.org/) - Dependencies Magnament
 
 
-## 📌 Versão
+## 📌 Version
 
 [1.0.0]
 
