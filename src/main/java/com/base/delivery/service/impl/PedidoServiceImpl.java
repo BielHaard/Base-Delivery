@@ -1,51 +1,60 @@
 package com.base.delivery.service.impl;
 
+import com.base.delivery.dto.PedidoDTO;
 import com.base.delivery.entity.Pedido;
 import com.base.delivery.exception.IdNotFoundException;
 import com.base.delivery.repository.PedidoRepository;
+import com.base.delivery.service.ClienteService;
 import com.base.delivery.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoServiceImpl implements PedidoService {
 
     @Autowired
-    PedidoRepository pedidoRepository;
+    private PedidoRepository pedidoRepository;
 
-    @Override
-    public List<Pedido> listarPedidos() {
-        return pedidoRepository.findAll();
+    @Autowired
+    private ClienteService clienteService;
+
+    public List<PedidoDTO> getAllPedidos() {
+        List<Pedido> pedidos = pedidoRepository.findAll();
+        return pedidos.stream()
+                .map(PedidoDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public Pedido buscarPedidoPorId(Long id) {
-        return pedidoRepository.findById(id)
+    public PedidoDTO getPedidoById(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new IdNotFoundException("Pedido não encontrado com ID: " + id));
+        return PedidoDTO.fromEntity(pedido);
     }
 
-    public Pedido adicionarPedido(Pedido pedido) {
-        try {
-            return pedidoRepository.save(pedido);
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Erro ao adicionar o pedido. Verifique as restrições de integridade de dados.", e);
-        }
+    public PedidoDTO createPedido(PedidoDTO pedidoDTO, Long clienteId) {
+
+        Pedido pedido = pedidoDTO.toEntity();
+        Pedido pedidoSalvo = pedidoRepository.save(pedido);
+
+        clienteService.relacionarPedidoAoCliente(clienteId, PedidoDTO.fromEntity(pedidoSalvo));
+
+        return PedidoDTO.fromEntity(pedidoSalvo);
     }
 
-    @Override
-    public Pedido atualizarPedido(Long id, Pedido pedido) {
-        pedidoRepository.findById(id)
+    public PedidoDTO updatePedido(Long id, PedidoDTO pedidoDTO) {
+        Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new IdNotFoundException("Pedido não encontrado com ID: " + id));
-        return pedidoRepository.save(pedido);
+
+        pedido.setDescricao(pedidoDTO.descricao());
+        pedido.setValorTotalPedido(pedidoDTO.valorTotalPedido());
+
+        return PedidoDTO.fromEntity(pedidoRepository.save(pedido));
     }
 
-    @Override
-    public void deletarPedido(Long id) {
-        pedidoRepository.findById(id)
-                .orElseThrow(() -> new IdNotFoundException("Pedido não encontrado com ID: " + id));
+    public void deletePedido(Long id) {
         pedidoRepository.deleteById(id);
     }
 }

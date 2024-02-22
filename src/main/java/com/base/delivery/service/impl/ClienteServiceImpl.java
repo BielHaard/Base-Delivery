@@ -1,52 +1,63 @@
 package com.base.delivery.service.impl;
 
+import com.base.delivery.dto.ClienteDTO;
+import com.base.delivery.dto.PedidoDTO;
 import com.base.delivery.entity.Cliente;
+import com.base.delivery.entity.Pedido;
 import com.base.delivery.exception.IdNotFoundException;
 import com.base.delivery.repository.ClienteRepository;
 import com.base.delivery.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
 
     @Autowired
-    ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
 
-    @Override
-    public List<Cliente> listarClientes() {
-        return clienteRepository.findAll();
+    public List<ClienteDTO> getAllClientes() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        return clientes.stream()
+                .map(ClienteDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public Cliente buscarClientePorId(Long id) {
-        return clienteRepository.findById(id)
+    public ClienteDTO getClienteById(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new IdNotFoundException("Cliente não encontrado com ID: " + id));
+        return ClienteDTO.fromEntity(cliente);
     }
 
-    @Override
-    public Cliente adicionarCliente(Cliente cliente) {
-        try {
-            return clienteRepository.save(cliente);
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Erro ao adicionar o cliente. Verifique as restrições de integridade de dados.", e);
-        }
+    public ClienteDTO createCliente(ClienteDTO clienteDTO) {
+        Cliente cliente = clienteDTO.toEntity();
+        Cliente clienteSalvo = clienteRepository.save(cliente);
+        return ClienteDTO.fromEntity(clienteSalvo);
     }
 
-    @Override
-    public Cliente atualizarCliente(Long id, Cliente cliente) {
-        clienteRepository.findById(id)
+    public ClienteDTO updateCliente(Long id, ClienteDTO clienteDTO) {
+        Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new IdNotFoundException("Cliente não encontrado com ID: " + id));
-        return clienteRepository.save(cliente);
+
+        cliente.setNome(clienteDTO.nome());
+        cliente.setNumeroTelefone(clienteDTO.numeroTelefone());
+
+        return ClienteDTO.fromEntity(clienteRepository.save(cliente));
     }
 
-    @Override
-    public void deletarCliente(Long id) {
-        clienteRepository.findById(id)
-                .orElseThrow(() -> new IdNotFoundException("Cliente não encontrado com ID: " + id));
+    public void deleteCliente(Long id) {
         clienteRepository.deleteById(id);
+    }
+
+    public ClienteDTO relacionarPedidoAoCliente(Long clienteId, PedidoDTO pedidoDTO) {
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new IdNotFoundException("Cliente não encontrado com ID: " + clienteId));
+        Pedido pedido = pedidoDTO.toEntity();
+        pedido.setCliente(cliente);
+        cliente.getPedidos().add(pedido);
+        return ClienteDTO.fromEntity(clienteRepository.save(cliente));
     }
 }

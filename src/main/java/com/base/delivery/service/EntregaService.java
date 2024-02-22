@@ -1,19 +1,17 @@
 package com.base.delivery.service;
-
-import com.base.delivery.entity.Entrega;
+import com.base.delivery.dto.EntregaDTO;
 
 import java.util.List;
 
 public interface EntregaService {
 
-    List<Entrega> listarEntregas();
+    List<EntregaDTO> getAllEntregas();
 
-    Entrega buscarEntregaPorId(Long id);
+    EntregaDTO getEntregaById(Long id);
 
-    Entrega adicionarEntrega(Entrega entrega);
+    EntregaDTO createEntrega(EntregaDTO entregaDTO, Long pedidoId);
 
-    Entrega atualizarEntrega(Long id, Entrega entrega);
+    EntregaDTO updateEntrega(Long id, EntregaDTO entregaDTO);
 
-    void deletarEntrega(Long id);
-
+    void deleteEntrega(Long id);
 }

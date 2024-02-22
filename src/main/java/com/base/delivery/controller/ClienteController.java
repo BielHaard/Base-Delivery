@@ -1,49 +1,47 @@
 package com.base.delivery.controller;
 
-import com.base.delivery.entity.Cliente;
-import com.base.delivery.repository.ClienteRepository;
+import com.base.delivery.dto.ClienteDTO;
+import com.base.delivery.dto.PedidoDTO;
 import com.base.delivery.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
 
     @Autowired
-    ClienteService clienteService;
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteService clienteService;
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> getListarClientes() {
-        return ResponseEntity.ok(clienteService.listarClientes());
+    public List<ClienteDTO> getAllClientes() {
+        return clienteService.getAllClientes();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> getClientePorId(@PathVariable Long id) {
-        return ResponseEntity.ok(clienteService.buscarClientePorId(id));
+    public ClienteDTO getClienteById(@PathVariable Long id) {
+        return clienteService.getClienteById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> adicionarCliente(@RequestBody Cliente cliente) {
-        return ResponseEntity.ok(clienteService.adicionarCliente(cliente));
+    public ClienteDTO createCliente(@RequestBody ClienteDTO clienteDTO) {
+        return clienteService.createCliente(clienteDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizarCliente(@RequestBody Cliente cliente) {
-        return ResponseEntity.ok(clienteService.atualizarCliente(cliente.getId(), cliente));
+    public ClienteDTO updateCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
+        return clienteService.updateCliente(id, clienteDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletarCliente(@PathVariable Long id) {
-        clienteService.deletarCliente(id);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public void deleteCliente(@PathVariable Long id) {
+        clienteService.deleteCliente(id);
     }
 
+    @PostMapping("/{clienteId}/relacionar-pedido")
+    public ClienteDTO relacionarPedidoAoCliente(@PathVariable Long clienteId, @RequestBody PedidoDTO pedidoDTO) {
+        return clienteService.relacionarPedidoAoCliente(clienteId, pedidoDTO);
+    }
 }

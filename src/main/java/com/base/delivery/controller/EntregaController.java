@@ -1,11 +1,8 @@
 package com.base.delivery.controller;
 
-import com.base.delivery.entity.Entrega;
-import com.base.delivery.repository.EntregaRepository;
+import com.base.delivery.dto.EntregaDTO;
 import com.base.delivery.service.EntregaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,28 +15,27 @@ public class EntregaController {
     private EntregaService entregaService;
 
     @GetMapping
-    public ResponseEntity<List<Entrega>> getListarEntregas() {
-        return ResponseEntity.ok(entregaService.listarEntregas());
+    public List<EntregaDTO> getAllEntregas() {
+        return entregaService.getAllEntregas();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Entrega> getEntregaPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(entregaService.buscarEntregaPorId(id));
+    public EntregaDTO getEntregaById(@PathVariable Long id) {
+        return entregaService.getEntregaById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<Entrega> adicionarEntrega(@RequestBody Entrega entrega) {
-        return ResponseEntity.ok(entregaService.adicionarEntrega(entrega));
+    @PostMapping("/{pedidoId}")
+    public EntregaDTO createEntrega(@RequestBody EntregaDTO entregaDTO, @PathVariable Long pedidoId) {
+        return entregaService.createEntrega(entregaDTO, pedidoId);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Entrega> atualizarEntrega(@PathVariable Long id, @RequestBody Entrega entrega) {
-        return ResponseEntity.ok(entregaService.atualizarEntrega(id, entrega));
+    public EntregaDTO updateEntrega(@PathVariable Long id, @RequestBody EntregaDTO entregaDTO) {
+        return entregaService.updateEntrega(id, entregaDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletarEntrega(@PathVariable Long id) {
-        entregaService.deletarEntrega(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public void deleteEntrega(@PathVariable Long id) {
+        entregaService.deleteEntrega(id);
     }
 }

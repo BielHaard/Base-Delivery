@@ -1,14 +1,16 @@
 package com.base.delivery.service.impl;
 
+import com.base.delivery.dto.EntregaDTO;
 import com.base.delivery.entity.Entrega;
 import com.base.delivery.exception.IdNotFoundException;
 import com.base.delivery.repository.EntregaRepository;
 import com.base.delivery.service.EntregaService;
+import com.base.delivery.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EntregaServiceImpl implements EntregaService {
@@ -16,37 +18,37 @@ public class EntregaServiceImpl implements EntregaService {
     @Autowired
     private EntregaRepository entregaRepository;
 
-    @Override
-    public List<Entrega> listarEntregas() {
-        return entregaRepository.findAll();
+    @Autowired
+    private PedidoService pedidoService;
+
+    public List<EntregaDTO> getAllEntregas() {
+        List<Entrega> entregas = entregaRepository.findAll();
+        return entregas.stream()
+                .map(EntregaDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public Entrega buscarEntregaPorId(Long id) {
-        return entregaRepository.findById(id)
+    public EntregaDTO getEntregaById(Long id) {
+        Entrega entrega = entregaRepository.findById(id)
                 .orElseThrow(() -> new IdNotFoundException("Entrega não encontrada com ID: " + id));
+        return EntregaDTO.fromEntity(entrega);
     }
 
-    @Override
-    public Entrega adicionarEntrega(Entrega entrega) {
-        try {
-            return entregaRepository.save(entrega);
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Erro ao adicionar a entrega. Verifique as restrições de integridade de dados.", e);
-        }
+    public EntregaDTO createEntrega(EntregaDTO entregaDTO, Long pedidoId) {
+        Entrega entrega = entregaDTO.toEntity();
+        return EntregaDTO.fromEntity(entregaRepository.save(entrega));
     }
 
-    @Override
-    public Entrega atualizarEntrega(Long id, Entrega entrega) {
-        entregaRepository.findById(id)
+    public EntregaDTO updateEntrega(Long id, EntregaDTO entregaDTO) {
+        Entrega entrega = entregaRepository.findById(id)
                 .orElseThrow(() -> new IdNotFoundException("Entrega não encontrada com ID: " + id));
-        return entregaRepository.save(entrega);
+
+        entrega.setStatus(entregaDTO.status());
+
+        return EntregaDTO.fromEntity(entregaRepository.save(entrega));
     }
 
-    @Override
-    public void deletarEntrega(Long id) {
-        entregaRepository.findById(id)
-                .orElseThrow(() -> new IdNotFoundException("Entrega não encontrada com ID: " + id));
+    public void deleteEntrega(Long id) {
         entregaRepository.deleteById(id);
     }
 }

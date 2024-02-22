@@ -1,20 +1,21 @@
 package com.base.delivery.service;
 
-import com.base.delivery.entity.Cliente;
+import com.base.delivery.dto.ClienteDTO;
+import com.base.delivery.dto.PedidoDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ClienteService {
 
-    List<Cliente> listarClientes();
+    List<ClienteDTO> getAllClientes();
 
-    Cliente buscarClientePorId(Long id);
+    ClienteDTO getClienteById(Long id);
 
-    Cliente adicionarCliente(Cliente cliente);
+    ClienteDTO createCliente(ClienteDTO clienteDTO);
 
-    Cliente atualizarCliente(Long id, Cliente cliente);
+    ClienteDTO updateCliente(Long id, ClienteDTO clienteDTO);
 
-    void deletarCliente(Long id);
+    void deleteCliente(Long id);
 
+    ClienteDTO relacionarPedidoAoCliente(Long clienteId, PedidoDTO pedidoDTO);
 }

@@ -1,20 +1,17 @@
 package com.base.delivery.service;
-
-import com.base.delivery.entity.Pedido;
+import com.base.delivery.dto.PedidoDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface PedidoService {
 
-    List<Pedido> listarPedidos();
+    List<PedidoDTO> getAllPedidos();
 
-    Pedido buscarPedidoPorId(Long id);
+    PedidoDTO getPedidoById(Long id);
 
-    Pedido adicionarPedido(Pedido cliente);
+    PedidoDTO createPedido(PedidoDTO pedidoDTO, Long clienteId);
 
-    Pedido atualizarPedido(Long id, Pedido cliente);
+    PedidoDTO updatePedido(Long id, PedidoDTO pedidoDTO);
 
-    void deletarPedido(Long id);
-
+    void deletePedido(Long id);
 }

@@ -1,50 +1,41 @@
 package com.base.delivery.controller;
 
-import com.base.delivery.entity.Pedido;
-import com.base.delivery.repository.PedidoRepository;
+import com.base.delivery.dto.PedidoDTO;
 import com.base.delivery.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/pedidos")
 public class PedidoController {
 
     @Autowired
-    PedidoService pedidoService;
-    @Autowired
-    private PedidoRepository pedidosRepository;
+    private PedidoService pedidoService;
 
     @GetMapping
-    public ResponseEntity<List<Pedido>> getListarPedidos() {
-        return ResponseEntity.ok(pedidoService.listarPedidos());
+    public List<PedidoDTO> getAllPedidos() {
+        return pedidoService.getAllPedidos();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pedido> getPedidoPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(pedidoService.buscarPedidoPorId(id));
+    public PedidoDTO getPedidoById(@PathVariable Long id) {
+        return pedidoService.getPedidoById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<Pedido> adicionarPedido(@RequestBody Pedido pedidos) {
-        return ResponseEntity.ok(pedidoService.adicionarPedido(pedidos));
+    @PostMapping("/{clienteId}")
+    public PedidoDTO createPedido(@RequestBody PedidoDTO pedidoDTO, @PathVariable Long clienteId) {
+        return pedidoService.createPedido(pedidoDTO, clienteId);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Pedido> atualizarPedido(@RequestBody Pedido pedidos) {
-        return ResponseEntity.ok(pedidoService.atualizarPedido(pedidos.getIdPedido(), pedidos));
+    public PedidoDTO updatePedido(@PathVariable Long id, @RequestBody PedidoDTO pedidoDTO) {
+        return pedidoService.updatePedido(id, pedidoDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletarPedido(@PathVariable Long id) {
-        pedidoService.deletarPedido(id);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public void deletePedido(@PathVariable Long id) {
+        pedidoService.deletePedido(id);
     }
-
-
 }
